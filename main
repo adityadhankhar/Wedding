@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Wedding Flip Card</title>
+  <style>
+    body {
+      margin: 0;
+      background: #fff8f0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+      cursor: pointer;
+      font-family: sans-serif;
+    }
+
+    .flipbook {
+      width: 600px;
+      height: 400px;
+      position: relative;
+      perspective: 2000px;
+    }
+
+    .page {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      background: white;
+      transform-origin: left;
+      transform-style: preserve-3d;
+      transition: transform 1s;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+
+    .page iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .page.flipped {
+      transform: rotateY(-180deg);
+      z-index: 0;
+    }
+
+    .page:not(.flipped) {
+      z-index: 1;
+    }
+
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      gap: 20px;
+    }
+
+    .controls button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #f0b7a4;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .controls button:hover {
+      background-color: #ef9c7d;
+    }
+  </style>
+</head>
+<body>
+  <div class="flipbook" id="flipbook">
+    <div class="page" id="page1"><iframe src="page1.pdf"></iframe></div>
+    <div class="page" id="page2"><iframe src="page2.pdf"></iframe></div>
+    <div class="page" id="page3"><iframe src="page3.pdf"></iframe></div>
+    <div class="page" id="page4"><iframe src="page4.pdf"></iframe></div>
+  </div>
+
+  <div class="controls">
+    <button id="prevBtn">Back</button>
+    <button id="nextBtn">Next</button>
+  </div>
+
+  <audio id="bg-audio" src="wedding-music.mp3" loop></audio>
+
+  <script>
+    const pages = Array.from(document.querySelectorAll('.page'));
+    let current = 0;
+    let audioPlayed = false;
+
+    document.body.addEventListener('click', () => {
+      if (!audioPlayed) {
+        document.getElementById('bg-audio').play();
+        audioPlayed = true;
+      }
+    }, { once: true });
+
+    const flipForward = () => {
+      if (current < pages.length) {
+        pages[current].classList.add('flipped');
+        current++;
+      }
+    };
+
+    const flipBackward = () => {
+      if (current > 0) {
+        current--;
+        pages[current].classList.remove('flipped');
+      }
+    };
+
+    document.getElementById('nextBtn').addEventListener('click', flipForward);
+    document.getElementById('prevBtn').addEventListener('click', flipBackward);
+  </script>
+</body>
+</html>
