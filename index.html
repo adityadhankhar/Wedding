@@ -1,27 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Wedding Flip Card</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Wedding Flipbook</title>
   <style>
     body {
       margin: 0;
       background: #fff8f0;
+      font-family: sans-serif;
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
       height: 100vh;
       overflow: hidden;
-      cursor: pointer;
-      font-family: sans-serif;
     }
 
     .flipbook {
-      width: 600px;
+      width: 90%;
+      max-width: 600px;
       height: 400px;
       position: relative;
       perspective: 2000px;
+      display: none;
     }
 
     .page {
@@ -32,14 +34,14 @@
       transform-origin: left;
       transform-style: preserve-3d;
       transition: transform 1s;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
       overflow: hidden;
     }
 
-    .page iframe {
+    .page img {
       width: 100%;
       height: 100%;
-      border: none;
+      object-fit: cover;
     }
 
     .page.flipped {
@@ -57,7 +59,7 @@
       gap: 20px;
     }
 
-    .controls button {
+    .controls button, #startBtn {
       padding: 10px 20px;
       font-size: 16px;
       background-color: #f0b7a4;
@@ -67,63 +69,58 @@
       transition: background 0.3s ease;
     }
 
-    .controls button:hover {
+    .controls button:hover, #startBtn:hover {
       background-color: #ef9c7d;
+    }
+
+    #startBtn {
+      display: inline-block;
     }
   </style>
 </head>
 <body>
 
-https://drive.google.com/file/d/1moWJAM4LS8Qd6XurrUe8jz-6FEQ-lCer/view?usp=sharing
-
-https://drive.google.com/uc?export=download&id=1moWJAM4LS8Qd6XurrUe8jz-6FEQ-lCer
-
-
+  <button id="startBtn">Start the Experience</button>
 
   <div class="flipbook" id="flipbook">
-    <div class="page" id="page1"><iframe src="https://drive.google.com/uc?export=download&id=1moWJAM4LS8Qd6XurrUe8jz-6FEQ-lCer"></iframe></div>
-    <div class="page" id="page2"><iframe src="https://drive.google.com/uc?export=download&id=1moWJAM4LS8Qd6XurrUe8jz-6FEQ-lCer"></iframe></div>
-    <div class="page" id="page3"><iframe src="https://drive.google.com/uc?export=download&id=1moWJAM4LS8Qd6XurrUe8jz-6FEQ-lCer"></iframe></div>
-    <div class="page" id="page4"><iframe src="https://drive.google.com/uc?export=download&id=1moWJAM4LS8Qd6XurrUe8jz-6FEQ-lCer"></iframe></div>
+    <div class="page" id="page1"><img src="page1.jpg" alt="Page 1"/></div>
+    <div class="page" id="page2"><img src="page2.jpg" alt="Page 2"/></div>
+    <div class="page" id="page3"><img src="page3.jpg" alt="Page 3"/></div>
+    <div class="page" id="page4"><img src="page4.jpg" alt="Page 4"/></div>
   </div>
 
-  <div class="controls">
+  <div class="controls" id="nav" style="display:none;">
     <button id="prevBtn">Back</button>
     <button id="nextBtn">Next</button>
   </div>
 
-
-
-  <audio id="bg-audio" src="https://drive.google.com/uc?export=download&id=1W31Swfa603rXcm2-9FesJW4TwKe73mLJ" loop></audio>
+  <audio id="bg-audio" src="wedding-music.mp3" loop preload="auto"></audio>
 
   <script>
     const pages = Array.from(document.querySelectorAll('.page'));
+    const audio = document.getElementById('bg-audio');
     let current = 0;
-    let audioPlayed = false;
 
-    document.body.addEventListener('click', () => {
-      if (!audioPlayed) {
-        document.getElementById('bg-audio').play();
-        audioPlayed = true;
-      }
-    }, { once: true });
+    document.getElementById('startBtn').addEventListener('click', () => {
+      document.getElementById('flipbook').style.display = 'block';
+      document.getElementById('nav').style.display = 'flex';
+      document.getElementById('startBtn').style.display = 'none';
+      audio.play();
+    });
 
-    const flipForward = () => {
+    document.getElementById('nextBtn').addEventListener('click', () => {
       if (current < pages.length) {
         pages[current].classList.add('flipped');
         current++;
       }
-    };
+    });
 
-    const flipBackward = () => {
+    document.getElementById('prevBtn').addEventListener('click', () => {
       if (current > 0) {
         current--;
         pages[current].classList.remove('flipped');
       }
-    };
-
-    document.getElementById('nextBtn').addEventListener('click', flipForward);
-    document.getElementById('prevBtn').addEventListener('click', flipBackward);
+    });
   </script>
 </body>
 </html>
