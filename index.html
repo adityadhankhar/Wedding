@@ -18,27 +18,20 @@
     }
 
     .book {
-      width: 1152px;
-      height: 920px;
       position: relative;
       transform-style: preserve-3d;
       transition: transform 1s ease;
+      /* Remove fixed width and height */
     }
-
+    
     .face {
-      width: 100%;
-      height: 100%;
       position: absolute;
       backface-visibility: hidden;
+      /* Remove width and height */
     }
 
     .face img {
-      width: auto;
-      height: auto;
-      max-width: 100%;
-      max-height: 100%;
       display: block;
-      margin: auto;
     }
 
     #face1 {
