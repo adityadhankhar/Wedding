@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Wedding Flip</title>
+  <title>Wedding Flipbook</title>
   <style>
-  body {
+    body {
       margin: 0;
       background: #fff8f0;
       font-family: sans-serif;
@@ -16,52 +16,29 @@
       height: 100vh;
       overflow: hidden;
     }
-    
+
     .book {
-      width: 90vw;               /* Responsive width */
-      max-height: 90vh;          /* Prevent overflow */
+      width: 90vw;
+      max-height: 90vh;
       position: relative;
-      transform-style: preserve-3d;
-      transition: transform 1s ease;
-      aspect-ratio: 1152 / 920;  /* Maintain original image ratio */
+      aspect-ratio: 1152 / 920;
     }
-    
+
     .face {
       width: 100%;
       height: 100%;
       position: absolute;
-      backface-visibility: hidden;
+      top: 0;
+      left: 0;
+      display: none;
+      z-index: 0;
     }
-    
+
     .face img {
       width: 100%;
       height: 100%;
-      object-fit: contain;  /* Fit without crop */
+      object-fit: contain;
       display: block;
-    }
-
-
-    #face1 {
-      transform: rotateY(0deg);
-      z-index: 3;
-    }
-
-    #face2 {
-      transform: rotateY(180deg);
-      z-index: 2;
-    }
-
-    #face3 {
-      transform: rotateY(360deg);
-      z-index: 1;
-    }
-
-    .flip1 {
-      transform: rotateY(-180deg);
-    }
-
-    .flip2 {
-      transform: rotateY(-360deg);
     }
 
     .controls {
@@ -88,7 +65,7 @@
 
   <div class="book" id="book">
     <div class="face" id="face1"><img src="Page1.png" alt="Page 1"></div>
-    <div class="face" id="face2"><img src="Spread.png" alt="Pages 2-3"></div>
+    <div class="face" id="face2"><img src="Spread.png" alt="Pages 2 & 3"></div>
     <div class="face" id="face3"><img src="Page4.png" alt="Page 4"></div>
   </div>
 
@@ -98,24 +75,34 @@
   </div>
 
   <audio id="bg-music" src="Music.mp3" preload="auto" loop></audio>
-  <audio id="flip-sound" src="Flip.mp3" preload="auto"></audio>
+  <audio id="flip-sound" src="flip.mp3" preload="auto"></audio>
 
   <script>
     const book = document.getElementById('book');
+    const faces = ['face1', 'face2', 'face3'];
     const bgMusic = document.getElementById('bg-music');
     const flipSound = document.getElementById('flip-sound');
     let flip = 0;
 
-    flipSound.volume = 0.2;
+    flipSound.volume = 0.4;
 
+    // Start music on first user interaction
     document.addEventListener('click', () => {
       bgMusic.play();
     }, { once: true });
 
+    function updateFace() {
+      faces.forEach((id, i) => {
+        const face = document.getElementById(id);
+        face.style.display = i === flip ? 'block' : 'none';
+        face.style.zIndex = i === flip ? 10 : 0;
+      });
+    }
+
     document.getElementById('next').onclick = () => {
-      if (flip < 2) {
+      if (flip < faces.length - 1) {
         flip++;
-        book.className = 'book flip' + flip;
+        updateFace();
         flipSound.currentTime = 0;
         flipSound.play();
       }
@@ -124,11 +111,14 @@
     document.getElementById('prev').onclick = () => {
       if (flip > 0) {
         flip--;
-        book.className = 'book flip' + flip;
+        updateFace();
         flipSound.currentTime = 0;
         flipSound.play();
       }
     };
+
+    // Show initial page
+    updateFace();
   </script>
 
 </body>
