@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Wedding Flip</title>
   <style>
-    body {
+  body {
       margin: 0;
       background: #fff8f0;
       font-family: sans-serif;
@@ -16,23 +16,30 @@
       height: 100vh;
       overflow: hidden;
     }
-
+    
     .book {
+      width: 90vw;               /* Responsive width */
+      max-height: 90vh;          /* Prevent overflow */
       position: relative;
       transform-style: preserve-3d;
       transition: transform 1s ease;
-      /* Remove fixed width and height */
+      aspect-ratio: 1152 / 920;  /* Maintain original image ratio */
     }
     
     .face {
+      width: 100%;
+      height: 100%;
       position: absolute;
       backface-visibility: hidden;
-      /* Remove width and height */
     }
-
+    
     .face img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;  /* Fit without crop */
       display: block;
     }
+
 
     #face1 {
       transform: rotateY(0deg);
