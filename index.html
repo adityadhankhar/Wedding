@@ -23,7 +23,6 @@
       height: 400px;
       position: relative;
       perspective: 2000px;
-      display: none;
     }
 
     .page {
@@ -59,7 +58,7 @@
       gap: 20px;
     }
 
-    .controls button, #startBtn {
+    .controls button {
       padding: 10px 20px;
       font-size: 16px;
       background-color: #f0b7a4;
@@ -69,18 +68,12 @@
       transition: background 0.3s ease;
     }
 
-    .controls button:hover, #startBtn:hover {
+    .controls button:hover {
       background-color: #ef9c7d;
-    }
-
-    #startBtn {
-      display: inline-block;
     }
   </style>
 </head>
 <body>
-
-  <button id="startBtn">Start the Experience</button>
 
   <div class="flipbook" id="flipbook">
     <div class="page" id="page1"><img src="Page1.png" alt="Page 1"/></div>
@@ -89,28 +82,34 @@
     <div class="page" id="page4"><img src="Page4.png" alt="Page 4"/></div>
   </div>
 
-  <div class="controls" id="nav" style="display:none;">
+  <div class="controls" id="nav">
     <button id="prevBtn">Back</button>
     <button id="nextBtn">Next</button>
   </div>
 
   <audio id="bg-audio" src="Music.mp3" loop preload="auto"></audio>
+  <audio id="flip-sound" src="flip.mp3" preload="auto"></audio>
 
   <script>
     const pages = Array.from(document.querySelectorAll('.page'));
     const audio = document.getElementById('bg-audio');
+    const flipSound = document.getElementById('flip-sound');
+    flipSound.volume = 0.2; // softer flip sound
+
     let current = 0;
 
-    document.getElementById('startBtn').addEventListener('click', () => {
-      document.getElementById('flipbook').style.display = 'block';
-      document.getElementById('nav').style.display = 'flex';
-      document.getElementById('startBtn').style.display = 'none';
+    // Autoplay music on user interaction
+    const allowAudioPlayback = () => {
       audio.play();
-    });
+      document.removeEventListener('click', allowAudioPlayback);
+    };
+    document.addEventListener('click', allowAudioPlayback);
 
     document.getElementById('nextBtn').addEventListener('click', () => {
       if (current < pages.length) {
         pages[current].classList.add('flipped');
+        flipSound.currentTime = 0;
+        flipSound.play();
         current++;
       }
     });
@@ -119,6 +118,8 @@
       if (current > 0) {
         current--;
         pages[current].classList.remove('flipped');
+        flipSound.currentTime = 0;
+        flipSound.play();
       }
     });
   </script>
