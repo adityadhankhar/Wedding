@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Wedding Card</title>
+  <title>Wedding Flipbook</title>
   <style>
     body {
       margin: 0;
@@ -17,38 +17,46 @@
       overflow: hidden;
     }
 
-    .card-container {
+    .book {
       width: 90vw;
       max-height: 90vh;
       aspect-ratio: 1152 / 920;
+      perspective: 2000px;
       position: relative;
-      overflow: hidden;
     }
 
-    .card-view {
+    .page {
       width: 100%;
       height: 100%;
       position: absolute;
-      top: 0;
-      left: 0;
-      opacity: 0;
-      transform: rotateY(90deg);
-      transition: opacity 0.6s ease, transform 0.6s ease;
+      transform-style: preserve-3d;
+      transition: transform 1s ease;
+    }
+
+    .face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
       backface-visibility: hidden;
     }
 
-    .card-view.active {
-      opacity: 1;
-      transform: rotateY(0deg);
-      z-index: 1;
-    }
-
-    .card-view img {
+    .face img {
       width: 100%;
       height: 100%;
       object-fit: contain;
       display: block;
     }
+
+    /* Default state */
+    #page1 { z-index: 3; }
+    #page2 { z-index: 2; transform: rotateY(0deg); }
+    #page3 { z-index: 1; transform: rotateY(0deg); }
+
+    /* Flip animations */
+    .flipped1 #page1 { transform: rotateY(-180deg); }
+    .flipped1 #page2 { z-index: 3; }
+    .flipped2 #page2 { transform: rotateY(-180deg); }
+    .flipped2 #page3 { z-index: 3; }
 
     .controls {
       margin-top: 20px;
@@ -72,10 +80,21 @@
 </head>
 <body>
 
-  <div class="card-container" id="card">
-    <div class="card-view active"><img src="Page1.png" alt="Front Page" /></div>
-    <div class="card-view"><img src="Spread.png" alt="Pages 2 & 3" /></div>
-    <div class="card-view"><img src="Page4.png" alt="Back Page" /></div>
+  <div class="book" id="book">
+    <!-- Page 1: Front -->
+    <div class="page" id="page1">
+      <div class="face"><img src="Page1.png" alt="Page 1" /></div>
+    </div>
+
+    <!-- Page 2: Middle Spread (Pages 2 + 3) -->
+    <div class="page" id="page2">
+      <div class="face"><img src="Spread.png" alt="Pages 2 and 3" /></div>
+    </div>
+
+    <!-- Page 3: Back -->
+    <div class="page" id="page3">
+      <div class="face"><img src="Page4.png" alt="Page 4" /></div>
+    </div>
   </div>
 
   <div class="controls">
@@ -87,49 +106,47 @@
   <audio id="flip-sound" src="flip.mp3" preload="auto"></audio>
 
   <script>
-    const views = document.querySelectorAll('.card-view');
-    const nextBtn = document.getElementById('next');
-    const prevBtn = document.getElementById('prev');
+    const book = document.getElementById('book');
     const flipSound = document.getElementById('flip-sound');
     const bgMusic = document.getElementById('bg-music');
-    let current = 0;
+    let state = 0;
 
     flipSound.volume = 0.2;
 
-    // Unlock audio on first interaction
+    // Unlock audio
     document.addEventListener('click', () => {
       bgMusic.play().catch(() => {});
       flipSound.play().then(() => flipSound.pause()).catch(() => {});
     }, { once: true });
 
-    function updateView() {
-      views.forEach((view, i) => {
-        view.classList.toggle('active', i === current);
-      });
-    }
-
-    function playFlipSound() {
+    function playFlip() {
       flipSound.currentTime = 0;
-      flipSound.play().catch(e => console.warn('Flip sound failed:', e));
+      flipSound.play().catch(() => {});
     }
 
-    nextBtn.addEventListener('click', () => {
-      if (current < views.length - 1) {
-        current++;
-        updateView();
-        playFlipSound();
+    document.getElementById('next').onclick = () => {
+      if (state === 0) {
+        book.classList.add('flipped1');
+        playFlip();
+        state = 1;
+      } else if (state === 1) {
+        book.classList.add('flipped2');
+        playFlip();
+        state = 2;
       }
-    });
+    };
 
-    prevBtn.addEventListener('click', () => {
-      if (current > 0) {
-        current--;
-        updateView();
-        playFlipSound();
+    document.getElementById('prev').onclick = () => {
+      if (state === 2) {
+        book.classList.remove('flipped2');
+        playFlip();
+        state = 1;
+      } else if (state === 1) {
+        book.classList.remove('flipped1');
+        playFlip();
+        state = 0;
       }
-    });
-
-    updateView(); // Initialize
+    };
   </script>
 
 </body>
