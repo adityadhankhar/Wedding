@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Wedding Flipbook</title>
+  <title>Wedding Card</title>
   <style>
     body {
       margin: 0;
@@ -17,24 +17,28 @@
       overflow: hidden;
     }
 
-    .book {
+    .card-container {
       width: 90vw;
       max-height: 90vh;
-      position: relative;
       aspect-ratio: 1152 / 920;
+      position: relative;
+      overflow: hidden;
     }
 
-    .face {
+    .card-view {
       width: 100%;
       height: 100%;
       position: absolute;
-      top: 0;
-      left: 0;
-      display: none;
-      z-index: 0;
+      opacity: 0;
+      transition: opacity 0.6s ease;
     }
 
-    .face img {
+    .card-view.active {
+      opacity: 1;
+      z-index: 1;
+    }
+
+    .card-view img {
       width: 100%;
       height: 100%;
       object-fit: contain;
@@ -63,10 +67,10 @@
 </head>
 <body>
 
-  <div class="book" id="book">
-    <div class="face" id="face1"><img src="Page1.png" alt="Page 1"></div>
-    <div class="face" id="face2"><img src="Spread.png" alt="Pages 2 & 3"></div>
-    <div class="face" id="face3"><img src="Page4.png" alt="Page 4"></div>
+  <div class="card-container" id="card">
+    <div class="card-view active"><img src="Page1.png" alt="Front Page" /></div>
+    <div class="card-view"><img src="Spread.png" alt="Pages 2 & 3" /></div>
+    <div class="card-view"><img src="Page4.png" alt="Back Page" /></div>
   </div>
 
   <div class="controls">
@@ -78,47 +82,43 @@
   <audio id="flip-sound" src="flip.mp3" preload="auto"></audio>
 
   <script>
-    const book = document.getElementById('book');
-    const faces = ['face1', 'face2', 'face3'];
-    const bgMusic = document.getElementById('bg-music');
+    const views = document.querySelectorAll('.card-view');
+    const nextBtn = document.getElementById('next');
+    const prevBtn = document.getElementById('prev');
     const flipSound = document.getElementById('flip-sound');
-    let flip = 0;
+    const bgMusic = document.getElementById('bg-music');
 
-    flipSound.volume = 0.4;
+    let current = 0;
+    flipSound.volume = 0.2;
 
     // Start music on first user interaction
     document.addEventListener('click', () => {
       bgMusic.play();
     }, { once: true });
 
-    function updateFace() {
-      faces.forEach((id, i) => {
-        const face = document.getElementById(id);
-        face.style.display = i === flip ? 'block' : 'none';
-        face.style.zIndex = i === flip ? 10 : 0;
+    function updateView() {
+      views.forEach((view, i) => {
+        view.classList.toggle('active', i === current);
       });
     }
 
-    document.getElementById('next').onclick = () => {
-      if (flip < faces.length - 1) {
-        flip++;
-        updateFace();
+    nextBtn.addEventListener('click', () => {
+      if (current < views.length - 1) {
+        current++;
+        updateView();
         flipSound.currentTime = 0;
         flipSound.play();
       }
-    };
+    });
 
-    document.getElementById('prev').onclick = () => {
-      if (flip > 0) {
-        flip--;
-        updateFace();
+    prevBtn.addEventListener('click', () => {
+      if (current > 0) {
+        current--;
+        updateView();
         flipSound.currentTime = 0;
         flipSound.play();
       }
-    };
-
-    // Show initial page
-    updateFace();
+    });
   </script>
 
 </body>
